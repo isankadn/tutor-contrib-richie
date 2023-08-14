@@ -38,10 +38,10 @@ setup(
     long_description=load_readme(),
     packages=find_packages(exclude=["tests*", "contrib*"]),
     include_package_data=True,
-    python_requires=">=3.7",
-    install_requires=["tutor>=15.0.0,<16.1.0"],
+    python_requires=">=3.8",
+    install_requires=["tutor>=16.0.0,<17.0.0"],
     entry_points={
-        "tutor.plugin.v0": [
+        "utor.plugin.v1": [
             "richie = tutorrichie.plugin"
         ]
     },
