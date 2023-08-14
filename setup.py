@@ -39,7 +39,7 @@ setup(
     packages=find_packages(exclude=["tests*", "contrib*"]),
     include_package_data=True,
     python_requires=">=3.7",
-    install_requires=["tutor>=14.0.0,<15.0.0"],
+    install_requires=["tutor>=15.0.0,<16.1.0"],
     entry_points={
         "tutor.plugin.v0": [
             "richie = tutorrichie.plugin"

@@ -1,5 +1,5 @@
 #--------- Base image with cloned repo
-FROM python:3.7-bullseye as base
+FROM python:3.10-buster as base
 
 RUN apt update \
     && apt install -y git \
@@ -11,7 +11,7 @@ ARG RICHIE_VERSION={{ RICHIE_RELEASE_VERSION }}
 RUN git clone $RICHIE_REPOSITORY --branch $RICHIE_VERSION --depth 1 /richie
 
 #--------- Front-end builder image
-FROM node:14 as frontend-builder
+FROM node:16.15 as front-builder
 
 COPY --from=base /richie/src/frontend /app/richie/src/frontend
 WORKDIR /app/richie/src/frontend
@@ -21,7 +21,7 @@ RUN yarn install --frozen-lockfile && \
     yarn build-sass-production
 
 #--------- Production image
-FROM python:3.7-bullseye as production
+FROM python:3.10-buster as production
 
 RUN apt update \
     && apt install -y gettext git default-mysql-client \
