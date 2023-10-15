@@ -41,7 +41,7 @@ setup(
     python_requires=">=3.8",
     install_requires=["tutor>=16.0.0,<17.0.0"],
     entry_points={
-        "utor.plugin.v1": [
+        "tutor.plugin.v1": [
             "richie = tutorrichie.plugin"
         ]
     },
@@ -55,5 +55,6 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
 )

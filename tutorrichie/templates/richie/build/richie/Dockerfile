@@ -2,7 +2,7 @@
 FROM python:3.10-buster as base
 
 RUN apt update \
-    && apt install -y git \
+    && apt install -y git build-essential libcairo2 libffi-dev default-libmysqlclient-dev  \
     && rm -rf /var/lib/apt/lists/*
 
 # Clone repo
@@ -11,7 +11,7 @@ ARG RICHIE_VERSION={{ RICHIE_RELEASE_VERSION }}
 RUN git clone $RICHIE_REPOSITORY --branch $RICHIE_VERSION --depth 1 /richie
 
 #--------- Front-end builder image
-FROM node:16.15 as front-builder
+FROM node:16.15 as frontend-builder
 
 COPY --from=base /richie/src/frontend /app/richie/src/frontend
 WORKDIR /app/richie/src/frontend
@@ -24,7 +24,7 @@ RUN yarn install --frozen-lockfile && \
 FROM python:3.10-buster as production
 
 RUN apt update \
-    && apt install -y gettext git default-mysql-client \
+    && apt install -y gettext git default-mysql-client build-essential libcairo2 libffi-dev default-libmysqlclient-dev  \
     && rm -rf /var/lib/apt/lists/*
 
 # User creation
@@ -40,18 +40,21 @@ RUN python -m venv /app/venv
 ENV PATH /app/venv/bin:${PATH}
 RUN pip install pip==22.0.4 setuptools==62.1.0 wheel==0.37.1
 RUN pip install -e .[sandbox]
+RUN pip install mysqlclient==2.2.0
 RUN pip install uwsgi==2.0.20
-RUN pip install mysqlclient==2.1.0
 # Use temporarily a forked version of djangocms-admin-style
 # Remove this when djangocms-admin-style 2.0.3 will be released\
 # See upstream Dockerfile https://github.com/openfun/richie/blob/master/Dockerfile
-RUN pip install git+https://github.com/jbpenrath/djangocms-admin-style@fun#egg=djangocms-admin-style
+RUN pip install git+https://github.com/django-cms/djangocms-admin-style.git@3.2.6#egg=djangocms-admin-style
 # Install requirements for storing media assets on S3/MinIO
 RUN pip install django-storages==1.12.3 boto3==1.20.25
 
 ENV DJANGO_SETTINGS_MODULE settings
 ENV DJANGO_CONFIGURATION Production
 ENV DJANGO_SECRET_KEY setme
+
+ARG DOCKER_USER
+USER ${DOCKER_USER}
 
 # Collect static assets
 COPY --from=frontend-builder --chown=openedx:openedx \
